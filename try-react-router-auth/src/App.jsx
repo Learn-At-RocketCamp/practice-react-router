@@ -1,167 +1,28 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { createContext } from 'react';
-import {
-  Routes,
-  Route,
-  Link,
-  Outlet,
-  Navigate,
-  useNavigate,
-} from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
+import { Routes, Route, useNavigate } from 'react-router-dom';
+// import {
+//   Navigate,
+//   useNavigate,
+// } from 'react-router-dom';
+import { UserContext } from './components/useAuth';
 
-import logo from './logo.svg';
-import poweredBy from './powered-by-vitawind-dark.png';
+import Layout from './pages/Layout.jsx';
+import PageHome from './pages/PageHome.jsx';
+import PageLogin from './pages/PageLogin.jsx';
+import PageProtected from './pages/PageProtected.jsx';
+import ProtectedRoute from './pages/ProtectedRoute.jsx';
 
-const UserContext = createContext(null);
-// null => { token, setToken }
-
-const useAuth = () => {
-  return useContext(UserContext);
-  // custom hooks
-};
-
-const UserStatus = () => {
-  const { token, setToken } = useAuth();
-  // 大家共用 app
-  const navigate = useNavigate();
-
-  if (!token) {
-    return <p className="text-orange-500">!Not Allow!</p>;
-  }
-
-  return (
-    <>
-      <p>Welcome!</p>
-
-      <button
-        type="button"
-        className="rounded-md bg-sky-500 py-1 px-3 text-white  hover:bg-sky-700"
-        onClick={() => {
-          setToken(false);
-          localStorage.removeItem('token');
-
-          navigate('/');
-        }}
-      >
-        LOG-OUT
-      </button>
-    </>
-  );
-};
-
-const Layout = () => {
-  return (
-    <>
-      <UserStatus />
-
-      <hr className="h-2 bg-gray-300" />
-      <nav className="text-sky-600">
-        <li>
-          <Link to="/">[Public]_PageHome</Link>
-        </li>
-        <li>{/* <Link to="/login">LOGIN</Link> */}</li>
-        <li>
-          <Link to="/protected">[Protected]_PageTodos</Link>
-        </li>
-      </nav>
-      <hr className="h-2 bg-gray-300" />
-
-      <Outlet />
-    </>
-  );
-};
-
-const PageLogin = () => {
-  const navigate = useNavigate();
-  const { token, setToken } = useAuth();
-
-  return (
-    <>
-      <h2>PageLogin</h2>
-      <p>
-        {token ? (
-          // IF (token)
-          // 'true'
-          <button
-            type="button"
-            className="my-6 rounded bg-[#333] px-4 py-2 text-white transition-all hover:bg-gray-200"
-            onClick={() => {
-              console.log('DASHBOARD');
-            }}
-          >
-            DASHBOARD
-          </button>
-        ) : (
-          // IF (!token)
-          <button
-            type="button"
-            className="my-6 rounded bg-[#333] px-4 py-2 text-white transition-all hover:bg-gray-200"
-            // className="rounded-md bg-sky-500 py-1 px-3 text-white  hover:bg-sky-700"
-            onClick={() => {
-              /**
-               * #TODO:
-               * 1. `onLogin()`
-               * 2. if (res.ok)
-               */
-              const TOKEN =
-                'Bearer eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiIxOTM2Iiwic2NwIjoidXNlciIsImF1ZCI6bnVsbCwiaWF0IjoxNjU3Njk1NDc1LCJleHAiOjE2NTg5OTE0NzUsImp0aSI6ImFjMTE5MmM3LTA4NzMtNDQyMC05MjdlLTVkMzFiMzdlYjJlYSJ9.dZr_xp21nXTRNrTc-TPGaPM4-79mhOV4TKowYmFWXmg';
-              localStorage.setItem('token', TOKEN);
-              setToken(TOKEN);
-
-              navigate('/protected');
-            }}
-          >
-            LOG-IN
-          </button>
-        )}
-      </p>
-    </>
-  );
-};
-const PageHome = () => {
-  return (
-    <main>
-      <h2>Welcome to the Homepage!</h2>
-      <PageLogin />
-    </main>
-  );
-};
-
-const PageProtected = () => {
-  const { token } = useAuth();
-
-  return (
-    <main className="container mx-auto p-2">
-      <h2 className="bg-orange-300">! This is PageProtected !</h2>
-      <p className="text-xl text-yellow-600">TODOLIST</p>
-
-      <pre>{JSON.stringify(token, null, 2)}</pre>
-    </main>
-  );
-};
-
-const ProtectedRoute = ({ children }) => {
-  const { token } = useAuth();
-  // const navigate = useNavigate();
-
-  if (!token) {
-    return <Navigate to="/" replace />;
-  }
-
-  return children;
-};
+import logo from './images/logo.svg';
+import poweredBy from './images/powered-by-vitawind-dark.png';
+/* end of import */
 
 function App() {
   const navigate = useNavigate();
-
   const [count, setCount] = useState(0);
   // Step-0
   const [token, setToken] = useState(null);
 
   const getLocalToken = () => {
-    // const localToken = localStorage.getItem('token');
-    // console.log('hasToken-localToken:::', localToken);
-    // return localToken ? true : false;
     return localStorage.getItem('token');
   };
 
@@ -192,7 +53,7 @@ function App() {
 
   return (
     <div className="text-center selection:bg-green-900">
-      {/* 1 */}
+      {/* Step-1 */}
       <UserContext.Provider value={{ token, setToken }}>
         <Routes>
           <Route element={<Layout />}>
